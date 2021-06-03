@@ -3,7 +3,8 @@ package main
 import (
 	"database/sql"
 	"flag"
-	"fmt"
+	"github.com/Tike-Myson/real-time-forum/pkg/models"
+	"github.com/Tike-Myson/real-time-forum/pkg/models/sqlite3"
 	_ "github.com/mattn/go-sqlite3"
 	"log"
 	"net/http"
@@ -19,27 +20,23 @@ var (
 type application struct {
 	errorLog *log.Logger
 	infoLog *log.Logger
+	posts interface{
+		CreatePostsTable() error
+		InsertIntoTable(postData models.Post) error
+		Get() ([]models.Post, error)
+	}
+	users interface{
+
+	}
 }
 
 func main() {
 	addr := flag.String("addr", ":8000", "HTTP network address")
 	dsn := flag.String("dsn", "./forum.db", "Sqlite3 data source name")
-
 	flag.Parse()
 
 	infoLog := log.New(os.Stdout, Green+"INFO\t"+Reset, log.Ldate|log.Ltime)
 	errorLog := log.New(os.Stderr, Red+"ERROR\t"+Reset, log.Ldate|log.Ltime|log.Lshortfile)
-
-	app := &application{
-		errorLog: errorLog,
-		infoLog:  infoLog,
-	}
-
-	srv := &http.Server{
-		Addr:     *addr,
-		ErrorLog: errorLog,
-		Handler:  app.routes(),
-	}
 
 	db, err := openDB(*dsn)
 	if err != nil {
@@ -52,8 +49,19 @@ func main() {
 	if err != nil {
 		errorLog.Println(err)
 	}
-	fmt.Println("PING")
 	defer db.Close()
+
+	app := &application{
+		errorLog: errorLog,
+		infoLog:  infoLog,
+		posts: sqlite3.PostModel{DB: db},
+	}
+
+	srv := &http.Server{
+		Addr:     *addr,
+		ErrorLog: errorLog,
+		Handler:  app.routes(),
+	}
 
 	infoLog.Printf("Server run on http://127.0.0.1%s\n", *addr)
 	err = srv.ListenAndServe()
