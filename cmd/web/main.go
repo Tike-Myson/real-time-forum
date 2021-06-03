@@ -22,11 +22,23 @@ type application struct {
 	infoLog *log.Logger
 	posts interface{
 		CreatePostsTable() error
-		InsertIntoTable(postData models.Post) error
+		InsertPostIntoDB(models.Post) error
 		Get() ([]models.Post, error)
 	}
+	categories interface{
+		CreateCategoriesTable() error
+	}
+	categoryPostLinks interface{
+		CreateCategoryPostLinksTable() error
+	}
+	comments interface{
+		CreateCommentsTable() error
+	}
+	ratings interface{
+		CreateRatingsTable() error
+	}
 	users interface{
-
+		CreateUsersTable() error
 	}
 }
 
@@ -45,6 +57,7 @@ func main() {
 
 	db.SetMaxOpenConns(100)
 	db.SetMaxIdleConns(5)
+
 	err = db.Ping()
 	if err != nil {
 		errorLog.Println(err)
@@ -54,7 +67,12 @@ func main() {
 	app := &application{
 		errorLog: errorLog,
 		infoLog:  infoLog,
-		posts: sqlite3.PostModel{DB: db},
+		posts: &sqlite3.PostModel{DB: db},
+		categories: &sqlite3.CategoryModel{DB: db},
+		categoryPostLinks: &sqlite3.CategoryPostLinkModel{DB: db},
+		comments: &sqlite3.CommentModel{DB: db},
+		ratings: &sqlite3.RatingModel{DB: db},
+		users: &sqlite3.UserModel{DB: db},
 	}
 
 	srv := &http.Server{
@@ -62,7 +80,6 @@ func main() {
 		ErrorLog: errorLog,
 		Handler:  app.routes(),
 	}
-
 	infoLog.Printf("Server run on http://127.0.0.1%s\n", *addr)
 	err = srv.ListenAndServe()
 	errorLog.Fatal(err)

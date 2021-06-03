@@ -5,7 +5,10 @@ import (
 )
 
 func (app *application) homePage(w http.ResponseWriter, r *http.Request) {
-	
+	err := app.createAllTables()
+	if err != nil {
+		app.serverError(w, err)
+	}
 }
 
 func (app *application) returnScoreboard(w http.ResponseWriter, r *http.Request){
