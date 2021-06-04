@@ -1,7 +1,6 @@
 package main
 
 import (
-	"database/sql"
 	"flag"
 	"github.com/Tike-Myson/real-time-forum/pkg/models"
 	"github.com/Tike-Myson/real-time-forum/pkg/models/sqlite3"
@@ -39,6 +38,7 @@ type application struct {
 	}
 	users interface{
 		CreateUsersTable() error
+		CreateUser(models.User) error
 	}
 }
 
@@ -83,15 +83,4 @@ func main() {
 	infoLog.Printf("Server run on http://127.0.0.1%s\n", *addr)
 	err = srv.ListenAndServe()
 	errorLog.Fatal(err)
-}
-
-func openDB(dsn string) (*sql.DB, error) {
-	db, err := sql.Open("sqlite3", dsn)
-	if err != nil {
-		return nil, err
-	}
-	if err = db.Ping(); err != nil {
-		return nil, err
-	}
-	return db, nil
 }

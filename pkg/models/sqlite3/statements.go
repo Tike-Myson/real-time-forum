@@ -35,12 +35,12 @@ const GetAllPostsSQL = `
 const CreateUsersTableSQL = `
 	CREATE TABLE IF NOT EXISTS users (
 		id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-		nickname TEXT NOT NULL,
+		nickname TEXT NOT NULL UNIQUE,
 		age INTEGER NOT NULL,
 		gender TEXT NOT NULL,
 		first_name TEXT NOT NULL,
 		last_name TEXT NOT NULL,
-		email TEXT NOT NULL,
+		email TEXT NOT NULL UNIQUE,
 		password TEXT NOT NULL
 	);
 `
