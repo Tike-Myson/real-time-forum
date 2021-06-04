@@ -62,7 +62,7 @@ const CreateCommentsTableSQL = `
 		post_id INTEGER NOT NULL,
 		author TEXT NOT NULL,
 		content TEXT NOT NULL,
-		created_at TIMESTAMP NOT NULL,
+		created_at TIMESTAMP NOT NULL
 	);
 `
 
@@ -88,7 +88,7 @@ const CreateCategoryTableSQL = `
 const CreateCategoryPostLinkSQL = `
 	CREATE TABLE IF NOT EXISTS categoryPostLink (
 		postID INTEGER NOT NULL,
-		name STRING NOT NULL
+		category_name STRING NOT NULL
 	);
 `
 
