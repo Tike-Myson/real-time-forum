@@ -39,6 +39,7 @@ type application struct {
 	users interface{
 		CreateUsersTable() error
 		CreateUser(models.User) error
+		Authenticate(string, []byte) (int, error)
 	}
 }
 

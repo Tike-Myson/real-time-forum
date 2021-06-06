@@ -1,6 +1,16 @@
 package models
 
-import "time"
+import (
+	"errors"
+	"time"
+)
+
+var (
+	ErrNoRecord = errors.New("models: no matching record found")
+	ErrInvalidCredentials = errors.New("models: invalid credentials")
+	ErrDuplicateEmail = errors.New("models: duplicate email")
+	ErrDuplicateUsername = errors.New("models: duplicate login")
+)
 
 type User struct {
 	Nickname  string `json:"nickname,omitempty"`
