@@ -14,7 +14,7 @@ var (
 
 type User struct {
 	Nickname  string `json:"nickname,omitempty"`
-	Age       int `json:"age,omitempty"`
+	Age       int    `json:"age,omitempty"`
 	Gender    string `json:"gender,omitempty"`
 	FirstName string `json:"first_name,omitempty"`
 	LastName  string `json:"last_name,omitempty"`
@@ -23,23 +23,23 @@ type User struct {
 }
 
 type Post struct {
-	Id int
-	Title string
-	Content string
-	Author string
-	CreatedAt time.Time
-	ImageURL string
-	Rating int
-	Comments []Comment
+	Id        int       `json:"id,omitempty"`
+	Title     string    `json:"title,omitempty"`
+	Content   string    `json:"content,omitempty"`
+	Author    string    `json:"author,omitempty"`
+	CreatedAt time.Time `json:"created_at"`
+	ImageURL  string    `json:"image_url,omitempty"`
+	Rating    int       `json:"rating,omitempty"`
+	Comments  []Comment `json:"comments,omitempty"`
 }
 
 type Comment struct {
-	Id int
-	PostId int
-	Author string
-	Content string
-	CreatedAt time.Time
-	Rating int
+	Id        string    `json:"id,omitempty"`
+	PostId    string    `json:"post_id,omitempty"`
+	Author    string    `json:"author,omitempty"`
+	Content   string    `json:"content,omitempty"`
+	CreatedAt time.Time `json:"created_at"`
+	Rating    int       `json:"rating,omitempty"`
 }
 
 type Category struct {

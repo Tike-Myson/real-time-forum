@@ -32,6 +32,7 @@ type application struct {
 	}
 	comments interface{
 		CreateCommentsTable() error
+		InsertCommentIntoDB(models.Comment) error
 	}
 	ratings interface{
 		CreateRatingsTable() error
