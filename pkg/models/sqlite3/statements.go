@@ -137,3 +137,23 @@ const InsertRatingCommentSQL = `
 		commentID, author, value
 	) VALUES (?, ?, ?);
 `
+
+const UpdateRatingPostSQL = `
+	UPDATE ratingPosts SET value = ?
+	WHERE author = ? AND postID = ?;
+`
+
+const UpdateRatingCommentSQL = `
+	UPDATE ratingComments SET value = ?
+	WHERE author = ? AND commentID = ?;
+`
+
+const SelectPostRatingByID = `
+	SELECT * FROM rating author = ? AND
+	postID = ?;
+`
+
+const SelectCommentRatingByID = `
+	SELECT * FROM rating author = ? AND
+	postID = ?;
+`

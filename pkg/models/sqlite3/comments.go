@@ -22,11 +22,11 @@ func (m *CommentModel) CreateCommentsTable() error {
 }
 
 func (m *CommentModel) InsertCommentIntoDB(commentData models.Comment) error {
-	insertPost, err := m.DB.Prepare(InsertCommentSQL)
+	insertComment, err := m.DB.Prepare(InsertCommentSQL)
 	if err != nil {
 		return err
 	}
-	_, err = insertPost.Exec(
+	_, err = insertComment.Exec(
 		commentData.PostId,
 		commentData.Author,
 		commentData.Content,

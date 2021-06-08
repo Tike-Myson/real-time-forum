@@ -15,9 +15,12 @@ func (app *application) routes() http.Handler {
 
 	mux.HandleFunc("/api/post/create", app.createPost)
 	mux.HandleFunc("/api/post/", app.showPost)
+	mux.HandleFunc("/api/post/like", app.likePost)
+	mux.HandleFunc("/api/post/dislike", app.dislikePost)
 
 	mux.HandleFunc("/api/comment/create", app.createComment)
-
+	mux.HandleFunc("/api/comment/like", app.likePost)
+	mux.HandleFunc("/api/comment/dislike", app.dislikePost)
 
 	return app.logRequest(app.secureHeaders(app.recoverPanic(mux)))
 

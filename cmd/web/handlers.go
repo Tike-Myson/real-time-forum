@@ -247,3 +247,74 @@ func (app *application) createComment(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func (app *application) likePost(w http.ResponseWriter, r *http.Request) {
+	if r.URL.Path != "/api/comment/create" {
+		app.clientError(w, http.StatusNotFound)
+		return
+	}
+
+	switch r.Method {
+	case "GET":
+
+	case "POST":
+		var data map[string]string
+		err := json.NewDecoder(r.Body).Decode(&data)
+		if err != nil {
+			app.serverError(w, err)
+			return
+		}
+		comment := models.Comment{
+			PostId: data["post_id"],
+			Author: data["author"],
+			Content: data["content"],
+			CreatedAt: time.Now(),
+		}
+
+		err = app.comments.InsertCommentIntoDB(comment)
+		if err != nil {
+			app.serverError(w, err)
+			return
+		}
+		json.NewEncoder(w).Encode(comment)
+	default:
+		app.clientError(w, http.StatusMethodNotAllowed)
+		return
+	}
+}
+
+func (app *application) dislikePost(w http.ResponseWriter, r *http.Request) {
+	if r.URL.Path != "/api/comment/create" {
+		app.clientError(w, http.StatusNotFound)
+		return
+	}
+
+	switch r.Method {
+	case "GET":
+
+	case "POST":
+		var data map[string]string
+		err := json.NewDecoder(r.Body).Decode(&data)
+		if err != nil {
+			app.serverError(w, err)
+			return
+		}
+		comment := models.Comment{
+			PostId: data["post_id"],
+			Author: data["author"],
+			Content: data["content"],
+			CreatedAt: time.Now(),
+		}
+
+		err = app.comments.InsertCommentIntoDB(comment)
+		if err != nil {
+			app.serverError(w, err)
+			return
+		}
+		json.NewEncoder(w).Encode(comment)
+	default:
+		app.clientError(w, http.StatusMethodNotAllowed)
+		return
+	}
+}
+
+
