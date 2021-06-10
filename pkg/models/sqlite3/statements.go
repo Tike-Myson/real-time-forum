@@ -11,14 +11,14 @@ const CreatePostsTableSQL = `
 		id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
 		title TEXT NOT NULL,
 		content TEXT NOT NULL,
-		author TEXT NOT NULL,
+		user_id INTEGER NOT NULL,
 		created_at TIMESTAMP NOT NULL,
 		image_url TEXT
 	);
 `
 const InsertPostSQL = `
 	INSERT INTO posts (
-		title, content, author, created_at, image_url
+		title, content, user_id, created_at, image_url
 	) VALUES (?, ?, ?, ?, ?);
 `
 
@@ -60,7 +60,7 @@ const CreateCommentsTableSQL = `
 	CREATE TABLE IF NOT EXISTS comments (
 		id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
 		post_id INTEGER NOT NULL,
-		author TEXT NOT NULL,
+		user_id INTEGER NOT NULL,
 		content TEXT NOT NULL,
 		created_at TIMESTAMP NOT NULL
 	);
@@ -68,7 +68,7 @@ const CreateCommentsTableSQL = `
 
 const InsertCommentSQL = `
 	INSERT INTO comments (
-		post_id, author, content, created_at
+		post_id, user_id, content, created_at
 	) VALUES (?, ?, ?, ?);
 `
 
@@ -87,7 +87,7 @@ const CreateCategoryTableSQL = `
 
 const CreateCategoryPostLinkSQL = `
 	CREATE TABLE IF NOT EXISTS categoryPostLink (
-		postID INTEGER NOT NULL,
+		post_id INTEGER NOT NULL,
 		category_name STRING NOT NULL
 	);
 `
@@ -100,7 +100,7 @@ const InsertCategoriesSQL = `
 
 const InsertCategoryPostLinkSQL = `
 	INSERT INTO categoryPostLink (
-		postID, name
+		post_id, name
 	) VALUES (?, ?);
 `
 
@@ -112,48 +112,48 @@ const InsertCategoryPostLinkSQL = `
 
 const CreateRatingPostSQL = `
 	CREATE TABLE IF NOT EXISTS ratingPosts (
-		postID INTEGER NOT NULL,
-		author STRING NOT NULL,
+		post_id INTEGER NOT NULL,
+		user_id INTEGER NOT NULL,
 		value INTEGER NOT NULL
 	);
 `
 
 const CreateRatingCommentSQL = `
 	CREATE TABLE IF NOT EXISTS ratingComments (
-		commentID INTEGER NOT NULL,
-		author STRING NOT NULL,
+		comment_id INTEGER NOT NULL,
+		user_Id INTEGER NOT NULL,
 		value INTEGER NOT NULL
 	);
 `
 
 const InsertRatingPostSQL = `
 	INSERT INTO ratingPosts (
-		postID, author, value
+		post_id, user_id, value
 	) VALUES (?, ?, ?);
 `
 
 const InsertRatingCommentSQL = `
 	INSERT INTO ratingComments (
-		commentID, author, value
+		comment_id, user_id, value
 	) VALUES (?, ?, ?);
 `
 
 const UpdateRatingPostSQL = `
 	UPDATE ratingPosts SET value = ?
-	WHERE author = ? AND postID = ?;
+	WHERE user_id = ? AND post_id = ?;
 `
 
 const UpdateRatingCommentSQL = `
 	UPDATE ratingComments SET value = ?
-	WHERE author = ? AND commentID = ?;
+	WHERE user_id = ? AND comment_id = ?;
 `
 
 const SelectPostRatingByID = `
-	SELECT * FROM rating author = ? AND
-	postID = ?;
+	SELECT value FROM rating user_id = ? AND
+	post_id = ?;
 `
 
 const SelectCommentRatingByID = `
-	SELECT * FROM rating author = ? AND
-	postID = ?;
+	SELECT value FROM rating user_id = ? AND
+	comment_id = ?;
 `

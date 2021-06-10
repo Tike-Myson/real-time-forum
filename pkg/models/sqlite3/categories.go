@@ -7,11 +7,23 @@ type CategoryModel struct {
 }
 
 func (m *CategoryModel) CreateCategoriesTable() error {
-	postsTable, err := m.DB.Prepare(CreatePostsTableSQL)
+	stmt, err := m.DB.Prepare(CreatePostsTableSQL)
 	if err != nil {
 		return err
 	}
-	_, err = postsTable.Exec()
+	_, err = stmt.Exec()
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (m *CategoryModel) InsertCategoryIntoDB(categoryName string) error {
+	stmt, err := m.DB.Prepare(InsertCategoriesSQL)
+	if err != nil {
+		return err
+	}
+	_, err = stmt.Exec(categoryName)
 	if err != nil {
 		return err
 	}

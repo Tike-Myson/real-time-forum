@@ -49,13 +49,13 @@ type Category struct {
 
 type RatingPost struct {
 	PostId int
-	Author string
+	UserId int
 	Value int
 }
 
 type RatingComment struct {
 	CommentId int
-	Author string
+	UserId int
 	Value int
 }
 

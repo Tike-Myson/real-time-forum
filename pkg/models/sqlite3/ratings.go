@@ -2,8 +2,6 @@ package sqlite3
 
 import (
 	"database/sql"
-	"github.com/Tike-Myson/real-time-forum/pkg/models"
-	"strconv"
 )
 
 type RatingModel struct {
@@ -31,75 +29,99 @@ func (m *RatingModel) CreateRatingsTable() error {
 	return nil
 }
 
-func (m *RatingModel) InsertLikeIntoPost(data models.RatingPost) error {
-	insertStmt, err := m.DB.Prepare(InsertRatingPostSQL)
-	if err != nil {
-		return err
-	}
-	_, err = insertStmt.Exec(
-		data.PostId,
-		data.Author,
-		data.Value,
-	)
-
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-func (m *RatingModel) InsertDislikeIntoPost(data models.RatingPost) error {
-	found, err := m.IsRatingExists(data.Author, strconv.Itoa(data.PostId), "post")
+func (m *RatingModel) InsertPostRating(postId, userId string, value int) error {
+	var currentRatingValue int
+	found, currentRatingValue, err := m.IsRatingExists(userId, postId, "post")
 	if err != nil {
 		return err
 	}
 	if !found {
-		insertStmt, err := m.DB.Prepare(InsertRatingPostSQL)
+		stmt, err := m.DB.Prepare(InsertRatingPostSQL)
 		if err != nil {
 			return err
 		}
-		_, err = insertStmt.Exec(
-			data.PostId,
-			data.Author,
-			data.Value,
-		)
-
+		_, err = stmt.Exec(postId, userId, value)
 		if err != nil {
 			return err
 		}
 		return nil
 	}
 
+	currentRatingValue += value
+
+	err = m.UpdatePostRating(userId, postId, currentRatingValue)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
-func (m *RatingModel) InsertLikeIntoComment() {
+func (m *RatingModel) InsertCommentRating(userId, commentId string, value int) error {
+	var currentRatingValue int
+	found, currentRatingValue, err := m.IsRatingExists(userId, commentId, "comment")
+	if err != nil {
+		return err
+	}
+	if !found {
+		stmt, err := m.DB.Prepare(InsertRatingCommentSQL)
+		if err != nil {
+			return err
+		}
+		_, err = stmt.Exec(commentId, userId, value)
+		if err != nil {
+			return err
+		}
+		return nil
+	}
 
+	currentRatingValue += value
+
+	err = m.UpdateCommentRating(userId, commentId, currentRatingValue)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
-func (m *RatingModel) InsertDislikeIntoComment() {
-
+func (m *RatingModel) UpdateCommentRating(userId, commentId string, value int) error {
+	_, err := m.DB.Exec(UpdateRatingCommentSQL, value, userId, commentId)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
-func (m *RatingModel) IsRatingExists(userId, id, flag string) (bool, error) {
+func (m *RatingModel) UpdatePostRating(userId, postId  string, value int) error {
+	_, err := m.DB.Exec(UpdateRatingPostSQL, value, userId, postId)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (m *RatingModel) IsRatingExists(userId, id, flag string) (bool, int, error) {
+	var value int
 	switch flag {
 	case "post":
 		rows, err := m.DB.Query(SelectPostRatingByID, userId, id)
 		if err != nil {
-			return false, err
+			return false, 0, err
 		}
 		if rows.Next() {
-			return true, err
+			rows.Scan(&value)
+			return true, value, err
 		}
 	case "comment":
 		rows, err := m.DB.Query(SelectCommentRatingByID, userId, id)
 		if err != nil {
-			return false, err
+			return false, 0, err
 		}
 		if rows.Next() {
-			return true, err
+			rows.Scan(&value)
+			return true, value, err
 		}
 	default:
-		return false, nil
+		return false, 0, nil
 	}
-	return false, nil
+	return false, 0, nil
 }

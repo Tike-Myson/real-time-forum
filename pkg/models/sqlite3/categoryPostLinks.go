@@ -17,3 +17,15 @@ func (m *CategoryPostLinkModel) CreateCategoryPostLinksTable() error {
 	}
 	return nil
 }
+
+func (m *CategoryPostLinkModel) InsertCategoryPostLinkIntoDB(postId, categoryName string) error {
+	stmt, err := m.DB.Prepare(InsertCategoryPostLinkSQL)
+	if err != nil {
+		return err
+	}
+	_, err = stmt.Exec(postId, categoryName)
+	if err != nil {
+		return err
+	}
+	return nil
+}
