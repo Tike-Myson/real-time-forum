@@ -19,3 +19,13 @@ func (app *application) clientError(w http.ResponseWriter, status int) {
 func (app *application) notFound(w http.ResponseWriter) {
 	app.clientError(w, http.StatusNotFound)
 }
+
+
+func getFirstParam(path string) (ps string) {
+	for i := 1; i < len(path); i++ {
+		if path[i] == '/' {
+			ps = path[i+1:]
+		}
+	}
+	return
+}

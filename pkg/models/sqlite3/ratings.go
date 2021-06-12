@@ -2,6 +2,7 @@ package sqlite3
 
 import (
 	"database/sql"
+	"fmt"
 )
 
 type RatingModel struct {
@@ -29,7 +30,7 @@ func (m *RatingModel) CreateRatingsTable() error {
 	return nil
 }
 
-func (m *RatingModel) InsertPostRating(postId, userId string, value int) error {
+func (m *RatingModel) InsertPostRating(userId, postId string, value int) error {
 	var currentRatingValue int
 	found, currentRatingValue, err := m.IsRatingExists(userId, postId, "post")
 	if err != nil {
@@ -46,7 +47,7 @@ func (m *RatingModel) InsertPostRating(postId, userId string, value int) error {
 		}
 		return nil
 	}
-
+	fmt.Println("GGG 1")
 	currentRatingValue += value
 
 	err = m.UpdatePostRating(userId, postId, currentRatingValue)
@@ -103,6 +104,7 @@ func (m *RatingModel) IsRatingExists(userId, id, flag string) (bool, int, error)
 	var value int
 	switch flag {
 	case "post":
+		fmt.Println("GGG")
 		rows, err := m.DB.Query(SelectPostRatingByID, userId, id)
 		if err != nil {
 			return false, 0, err

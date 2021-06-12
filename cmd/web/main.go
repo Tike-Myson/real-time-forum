@@ -36,6 +36,8 @@ type application struct {
 	}
 	ratings interface{
 		CreateRatingsTable() error
+		InsertPostRating(string, string, int) error
+		InsertCommentRating(string, string, int) error
 	}
 	users interface{
 		CreateUsersTable() error

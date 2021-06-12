@@ -7,6 +7,7 @@ import (
 	"github.com/Tike-Myson/real-time-forum/pkg/models"
 	"golang.org/x/crypto/bcrypt"
 	"net/http"
+	"net/url"
 	"strconv"
 	"time"
 )
@@ -203,7 +204,8 @@ func (app *application) showPost(w http.ResponseWriter, r *http.Request) {
 
 	switch r.Method {
 	case "GET":
-
+		u, _ := url.Parse(r.URL.Path)
+		fmt.Println(getFirstParam(u.Path))
 	case "POST":
 
 	default:
@@ -248,7 +250,7 @@ func (app *application) createComment(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *application) likePost(w http.ResponseWriter, r *http.Request) {
-	if r.URL.Path != "/api/comment/create" {
+	if r.URL.Path != "/api/post/like" {
 		app.clientError(w, http.StatusNotFound)
 		return
 	}
@@ -263,19 +265,12 @@ func (app *application) likePost(w http.ResponseWriter, r *http.Request) {
 			app.serverError(w, err)
 			return
 		}
-		comment := models.Comment{
-			PostId: data["post_id"],
-			Author: data["author"],
-			Content: data["content"],
-			CreatedAt: time.Now(),
-		}
-
-		err = app.comments.InsertCommentIntoDB(comment)
+		err = app.ratings.InsertPostRating(data["user_id"], data["post_id"], 1)
 		if err != nil {
 			app.serverError(w, err)
 			return
 		}
-		json.NewEncoder(w).Encode(comment)
+		json.NewEncoder(w).Encode(data)
 	default:
 		app.clientError(w, http.StatusMethodNotAllowed)
 		return
@@ -283,7 +278,7 @@ func (app *application) likePost(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *application) dislikePost(w http.ResponseWriter, r *http.Request) {
-	if r.URL.Path != "/api/comment/create" {
+	if r.URL.Path != "/api/comment/dislike" {
 		app.clientError(w, http.StatusNotFound)
 		return
 	}
@@ -298,23 +293,70 @@ func (app *application) dislikePost(w http.ResponseWriter, r *http.Request) {
 			app.serverError(w, err)
 			return
 		}
-		comment := models.Comment{
-			PostId: data["post_id"],
-			Author: data["author"],
-			Content: data["content"],
-			CreatedAt: time.Now(),
-		}
-
-		err = app.comments.InsertCommentIntoDB(comment)
+		err = app.ratings.InsertPostRating(data["user_id"], data["post_id"], -1)
 		if err != nil {
 			app.serverError(w, err)
 			return
 		}
-		json.NewEncoder(w).Encode(comment)
+		json.NewEncoder(w).Encode(data)
 	default:
 		app.clientError(w, http.StatusMethodNotAllowed)
 		return
 	}
 }
 
+func (app *application) likeComment(w http.ResponseWriter, r *http.Request) {
+	if r.URL.Path != "/api/comment/like" {
+		app.clientError(w, http.StatusNotFound)
+		return
+	}
 
+	switch r.Method {
+	case "GET":
+
+	case "POST":
+		var data map[string]string
+		err := json.NewDecoder(r.Body).Decode(&data)
+		if err != nil {
+			app.serverError(w, err)
+			return
+		}
+		err = app.ratings.InsertCommentRating(data["user_id"], data["comment_id"], 1)
+		if err != nil {
+			app.serverError(w, err)
+			return
+		}
+		json.NewEncoder(w).Encode(data)
+	default:
+		app.clientError(w, http.StatusMethodNotAllowed)
+		return
+	}
+}
+
+func (app *application) dislikeComment(w http.ResponseWriter, r *http.Request) {
+	if r.URL.Path != "/api/comment/dislike" {
+		app.clientError(w, http.StatusNotFound)
+		return
+	}
+
+	switch r.Method {
+	case "GET":
+
+	case "POST":
+		var data map[string]string
+		err := json.NewDecoder(r.Body).Decode(&data)
+		if err != nil {
+			app.serverError(w, err)
+			return
+		}
+		err = app.ratings.InsertCommentRating(data["user_id"], data["comment_id"], -1)
+		if err != nil {
+			app.serverError(w, err)
+			return
+		}
+		json.NewEncoder(w).Encode(data)
+	default:
+		app.clientError(w, http.StatusMethodNotAllowed)
+		return
+	}
+}
