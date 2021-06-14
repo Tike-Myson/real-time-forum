@@ -278,7 +278,7 @@ func (app *application) likePost(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *application) dislikePost(w http.ResponseWriter, r *http.Request) {
-	if r.URL.Path != "/api/comment/dislike" {
+	if r.URL.Path != "/api/post/dislike" {
 		app.clientError(w, http.StatusNotFound)
 		return
 	}

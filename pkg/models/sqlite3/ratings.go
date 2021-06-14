@@ -2,7 +2,6 @@ package sqlite3
 
 import (
 	"database/sql"
-	"fmt"
 )
 
 type RatingModel struct {
@@ -47,9 +46,9 @@ func (m *RatingModel) InsertPostRating(userId, postId string, value int) error {
 		}
 		return nil
 	}
-	fmt.Println("GGG 1")
-	currentRatingValue += value
-
+	if value != currentRatingValue {
+		currentRatingValue += value
+	}
 	err = m.UpdatePostRating(userId, postId, currentRatingValue)
 	if err != nil {
 		return err
@@ -74,9 +73,9 @@ func (m *RatingModel) InsertCommentRating(userId, commentId string, value int) e
 		}
 		return nil
 	}
-
-	currentRatingValue += value
-
+	if value != currentRatingValue {
+		currentRatingValue += value
+	}
 	err = m.UpdateCommentRating(userId, commentId, currentRatingValue)
 	if err != nil {
 		return err
@@ -104,12 +103,11 @@ func (m *RatingModel) IsRatingExists(userId, id, flag string) (bool, int, error)
 	var value int
 	switch flag {
 	case "post":
-		fmt.Println("GGG")
 		rows, err := m.DB.Query(SelectPostRatingByID, userId, id)
 		if err != nil {
-			fmt.Println("GGG")
 			return false, 0, err
 		}
+		defer rows.Close()
 		if rows.Next() {
 			rows.Scan(&value)
 			return true, value, err
@@ -119,6 +117,7 @@ func (m *RatingModel) IsRatingExists(userId, id, flag string) (bool, int, error)
 		if err != nil {
 			return false, 0, err
 		}
+		defer rows.Close()
 		if rows.Next() {
 			rows.Scan(&value)
 			return true, value, err

@@ -149,9 +149,9 @@ const UpdateRatingCommentSQL = `
 `
 
 const SelectPostRatingByID = `
-	SELECT * FROM ratingPosts user_id = ? AND post_id = ?;
+	SELECT value FROM ratingPosts where user_id = ? AND post_id = ?;
 `
 
 const SelectCommentRatingByID = `
-	SELECT * FROM ratingComments user_id = ? AND comment_id = ?;
+	SELECT value FROM ratingComments where user_id = ? AND comment_id = ?;
 `
