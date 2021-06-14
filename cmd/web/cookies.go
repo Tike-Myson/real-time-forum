@@ -18,7 +18,8 @@ func MakeCookie(login string) http.Cookie {
 		Name: "session",
 		Value: u1.String(),
 		Expires: expiration,
-		HttpOnly: true,
+		HttpOnly: false,
+		Path: "/",
 	}
 	return cookie
 }
@@ -26,8 +27,9 @@ func MakeCookie(login string) http.Cookie {
 func DeleteCookie(token string) http.Cookie {
 	delete(Cookies, token)
 	cookie := http.Cookie{
-		Value: "",
-		MaxAge: 0,
+		Name: "session",
+		Path: "/",
+		MaxAge: -1,
 	}
 	return cookie
 }

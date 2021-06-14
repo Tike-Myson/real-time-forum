@@ -7,7 +7,7 @@ import (
 func (app *application) routes() http.Handler {
 
 	mux := http.NewServeMux()
-	mux.HandleFunc("/", app.index)
+	//mux.HandleFunc("/", app.index)
 	mux.HandleFunc("/api/user/register", app.register)
 	mux.HandleFunc("/api/user/login", app.login)
 	mux.HandleFunc("/api/user", app.user)
@@ -22,6 +22,6 @@ func (app *application) routes() http.Handler {
 	mux.HandleFunc("/api/comment/like", app.likeComment)
 	mux.HandleFunc("/api/comment/dislike", app.dislikeComment)
 
+	mux.Handle("/", http.FileServer(http.Dir("./static")))
 	return app.logRequest(app.secureHeaders(app.recoverPanic(mux)))
-
 }

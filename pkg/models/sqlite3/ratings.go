@@ -107,6 +107,7 @@ func (m *RatingModel) IsRatingExists(userId, id, flag string) (bool, int, error)
 		fmt.Println("GGG")
 		rows, err := m.DB.Query(SelectPostRatingByID, userId, id)
 		if err != nil {
+			fmt.Println("GGG")
 			return false, 0, err
 		}
 		if rows.Next() {
