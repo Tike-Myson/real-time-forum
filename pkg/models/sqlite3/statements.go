@@ -155,3 +155,47 @@ const SelectPostRatingByID = `
 const SelectCommentRatingByID = `
 	SELECT value FROM ratingComments where user_id = ? AND comment_id = ?;
 `
+
+/*------------------------------------------------------*/
+/*                                                      */
+/*                    DIALOGS STATEMENTS                */
+/*                                                      */
+/*------------------------------------------------------*/
+
+const CreateDialogsSQL = `
+	CREATE TABLE IF NOT EXISTS dialogs (
+		id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+		sender_id INTEGER NOT NULL,
+		receiver_id INTEGER NOT NULL,
+		created_at TIMESTAMP NOT NULL
+);`
+
+const InsertDialogSQL = `
+	INSERT INTO dialogs (
+		id, sender_id, receiver_id, created_at
+	) VALUES (?, ?, ?, ?);
+`
+
+
+/*------------------------------------------------------*/
+/*                                                      */
+/*                  MESSAGES STATEMENTS                 */
+/*                                                      */
+/*------------------------------------------------------*/
+
+const CreateMessagesSQL = `
+	CREATE TABLE IF NOT EXISTS messages (
+		id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+		content TEXT NOT NULL,
+		dialog_id INTEGER NOT NULL,
+		sender_id INTEGER NOT NULL,
+		receiver_id INTEGER NOT NULL,
+		is_read BOOL NOT NULL,
+		created_at TIMESTAMP NOT NULL
+);`
+
+const InsertMessageSQL = `
+	INSERT INTO messages (
+		id, content, dialog_id, sender_id, receiver_id, is_read, created_at
+	) VALUES (?, ?, ?, ?, ?, ?, ?);
+`

@@ -42,6 +42,23 @@ type Comment struct {
 	Rating    int       `json:"rating,omitempty"`
 }
 
+type Message struct {
+	Id         string    `json:"id,omitempty"`
+	Content    string    `json:"content,omitempty"`
+	DialogId   string    `json:"dialog_id,omitempty"`
+	SenderId   string    `json:"sender_id,omitempty"`
+	ReceiverId string    `json:"receiver_id,omitempty"`
+	IsRead     bool      `json:"is_read,omitempty"`
+	CreatedAt  time.Time `json:"created_at"`
+}
+
+type Dialog struct {
+	Id         string    `json:"id,omitempty"`
+	SenderId   string    `json:"sender_id,omitempty"`
+	ReceiverId string    `json:"receiver_id,omitempty"`
+	CreatedAt  time.Time `json:"created_at"`
+}
+
 type Category struct {
 	Id int
 	Name string

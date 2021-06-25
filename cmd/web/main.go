@@ -44,6 +44,14 @@ type application struct {
 		CreateUser(models.User) error
 		Authenticate(string, []byte) (int, error)
 	}
+	dialogs interface{
+		CreateDialogsTable() error
+		InsertDialogIntoDB(models.Dialog) error
+	}
+	messages interface{
+		CreateMessagesTable() error
+		InsertMessageIntoDB(models.Message) error
+	}
 }
 
 func main() {
@@ -77,6 +85,8 @@ func main() {
 		comments: &sqlite3.CommentModel{DB: db},
 		ratings: &sqlite3.RatingModel{DB: db},
 		users: &sqlite3.UserModel{DB: db},
+		dialogs: &sqlite3.DialogsModel{DB: db},
+		messages: &sqlite3.MessagesModel{DB: db},
 	}
 
 	srv := &http.Server{

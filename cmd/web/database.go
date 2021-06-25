@@ -27,6 +27,14 @@ func (app *application) createAllTables() error {
 	if err != nil {
 		return err
 	}
+	err = app.dialogs.CreateDialogsTable()
+	if err != nil {
+		return err
+	}
+	err = app.messages.CreateMessagesTable()
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
