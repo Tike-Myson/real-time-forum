@@ -23,6 +23,7 @@ type application struct {
 		CreatePostsTable() error
 		InsertPostIntoDB(models.Post) error
 		Get() ([]models.Post, error)
+		GetPostById(string) (models.Post, error)
 	}
 	categories interface{
 		CreateCategoriesTable() error

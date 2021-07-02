@@ -180,7 +180,7 @@ func (app *application) createPost(w http.ResponseWriter, r *http.Request) {
 		post := models.Post{
 			Title: data["title"],
 			Content: data["content"],
-			Author: data["author"],
+			UserId: data["user_id"],
 			CreatedAt: time.Now(),
 			ImageURL: data["image_url"],
 		}
@@ -197,6 +197,39 @@ func (app *application) createPost(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *application) showPost(w http.ResponseWriter, r *http.Request) {
+	//if r.URL.Path != "/api/post/" {
+	//	app.clientError(w, http.StatusNotFound)
+	//	return
+	//}
+
+	switch r.Method {
+	case "GET":
+		u, _ := url.Parse(r.URL.Path)
+		id := getFirstParam(u.Path)
+		post, err := app.posts.GetPostById(id)
+		if err != nil {
+			if err == models.ErrNoRecord {
+				app.clientError(w, http.StatusNotFound)
+				return
+			}
+			app.serverError(w, err)
+			return
+		}
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Headers", "Origin")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Accept", "application/json")
+		json.NewEncoder(w).Encode(post)
+	case "POST":
+
+	default:
+		app.clientError(w, http.StatusMethodNotAllowed)
+		return
+	}
+}
+
+func (app *application) showDialog(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path != "/api/post/" {
 		app.clientError(w, http.StatusNotFound)
 		return
@@ -232,7 +265,7 @@ func (app *application) createComment(w http.ResponseWriter, r *http.Request) {
 		}
 		comment := models.Comment{
 			PostId: data["post_id"],
-			Author: data["author"],
+			UserId: data["user_id"],
 			Content: data["content"],
 			CreatedAt: time.Now(),
 		}

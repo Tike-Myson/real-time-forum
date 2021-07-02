@@ -20,7 +20,6 @@ func (app *application) notFound(w http.ResponseWriter) {
 	app.clientError(w, http.StatusNotFound)
 }
 
-
 func getFirstParam(path string) (ps string) {
 	for i := 1; i < len(path); i++ {
 		if path[i] == '/' {

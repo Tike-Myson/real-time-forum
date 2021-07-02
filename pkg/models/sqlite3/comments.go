@@ -28,7 +28,7 @@ func (m *CommentModel) InsertCommentIntoDB(commentData models.Comment) error {
 	}
 	_, err = insertComment.Exec(
 		commentData.PostId,
-		commentData.Author,
+		commentData.UserId,
 		commentData.Content,
 		commentData.CreatedAt,
 	)

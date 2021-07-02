@@ -26,7 +26,7 @@ type Post struct {
 	Id        int       `json:"id,omitempty"`
 	Title     string    `json:"title,omitempty"`
 	Content   string    `json:"content,omitempty"`
-	Author    string    `json:"author,omitempty"`
+	UserId    string    `json:"user_id,omitempty"`
 	CreatedAt time.Time `json:"created_at"`
 	ImageURL  string    `json:"image_url,omitempty"`
 	Rating    int       `json:"rating,omitempty"`
@@ -36,7 +36,7 @@ type Post struct {
 type Comment struct {
 	Id        string    `json:"id,omitempty"`
 	PostId    string    `json:"post_id,omitempty"`
-	Author    string    `json:"author,omitempty"`
+	UserId    string    `json:"user_id,omitempty"`
 	Content   string    `json:"content,omitempty"`
 	CreatedAt time.Time `json:"created_at"`
 	Rating    int       `json:"rating,omitempty"`
