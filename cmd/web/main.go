@@ -39,6 +39,8 @@ type application struct {
 		CreateRatingsTable() error
 		InsertPostRating(string, string, int) error
 		InsertCommentRating(string, string, int) error
+		GetRatingById(int, string) (int, error)
+		GetCommentsByPostId(postId int) ([]models.Comment, error)
 	}
 	users interface{
 		CreateUsersTable() error

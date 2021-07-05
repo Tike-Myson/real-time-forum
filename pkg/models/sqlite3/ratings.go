@@ -127,3 +127,41 @@ func (m *RatingModel) IsRatingExists(userId, id, flag string) (bool, int, error)
 	}
 	return false, 0, nil
 }
+
+func (m *RatingModel) GetRatingById(id int, flag string) (int, error) {
+	var value int
+	var result int
+	switch flag {
+	case "post":
+		rows, err := m.DB.Query("SELECT * FROM ratingPosts WHERE post_id = ?", id)
+		if err != nil {
+			return 0, err
+		}
+		defer rows.Close()
+		for rows.Next() {
+			err = rows.Scan(&value)
+			if err != nil {
+				return 0, err
+			}
+			result += value
+		}
+		return result, nil
+	case "comment":
+		rows, err := m.DB.Query("SELECT * FROM ratingComments WHERE comment_id = ?", id)
+		if err != nil {
+			return 0, err
+		}
+		defer rows.Close()
+		for rows.Next() {
+			err = rows.Scan(&value)
+			if err != nil {
+				return 0, err
+			}
+			result += value
+		}
+		return result, nil
+	default:
+		return 0, nil
+	}
+	return value, nil
+}

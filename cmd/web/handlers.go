@@ -196,12 +196,77 @@ func (app *application) createPost(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (app *application) showPost(w http.ResponseWriter, r *http.Request) {
-	//if r.URL.Path != "/api/post/" {
-	//	app.clientError(w, http.StatusNotFound)
-	//	return
-	//}
+func (app *application) createDialog(w http.ResponseWriter, r *http.Request) {
+	if r.URL.Path != "/api/dialog/create" {
+		app.clientError(w, http.StatusNotFound)
+		return
+	}
 
+	switch r.Method {
+	case "POST":
+		var data map[string]string
+		err := json.NewDecoder(r.Body).Decode(&data)
+		if err != nil {
+			app.serverError(w, err)
+			return
+		}
+
+		post := models.Post{
+			Title: data["title"],
+			Content: data["content"],
+			UserId: data["user_id"],
+			CreatedAt: time.Now(),
+			ImageURL: data["image_url"],
+		}
+		err = app.posts.InsertPostIntoDB(post)
+		if err != nil {
+			app.serverError(w, err)
+			return
+		}
+		json.NewEncoder(w).Encode(post)
+	default:
+		app.clientError(w, http.StatusMethodNotAllowed)
+		return
+	}
+}
+
+func (app *application) createMessage(w http.ResponseWriter, r *http.Request) {
+	if r.URL.Path != "/api/post/create" {
+		app.clientError(w, http.StatusNotFound)
+		return
+	}
+
+	switch r.Method {
+	case "GET":
+
+	case "POST":
+		var data map[string]string
+		err := json.NewDecoder(r.Body).Decode(&data)
+		if err != nil {
+			app.serverError(w, err)
+			return
+		}
+
+		post := models.Post{
+			Title: data["title"],
+			Content: data["content"],
+			UserId: data["user_id"],
+			CreatedAt: time.Now(),
+			ImageURL: data["image_url"],
+		}
+		err = app.posts.InsertPostIntoDB(post)
+		if err != nil {
+			app.serverError(w, err)
+			return
+		}
+		json.NewEncoder(w).Encode(post)
+	default:
+		app.clientError(w, http.StatusMethodNotAllowed)
+		return
+	}
+}
+
+func (app *application) showPost(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "GET":
 		u, _ := url.Parse(r.URL.Path)
@@ -215,14 +280,22 @@ func (app *application) showPost(w http.ResponseWriter, r *http.Request) {
 			app.serverError(w, err)
 			return
 		}
+		post.Comments, err = app.ratings.GetCommentsByPostId(post.Id)
+		if err != nil {
+			app.serverError(w, err)
+			return
+		}
+		post.Rating, err = app.ratings.GetRatingById(post.Id, "post")
+		if err != nil {
+			app.serverError(w, err)
+			return
+		}
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Header().Set("Access-Control-Allow-Headers", "Origin")
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 		w.Header().Set("Content-Type", "application/json")
 		w.Header().Set("Accept", "application/json")
 		json.NewEncoder(w).Encode(post)
-	case "POST":
-
 	default:
 		app.clientError(w, http.StatusMethodNotAllowed)
 		return
@@ -230,21 +303,24 @@ func (app *application) showPost(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *application) showDialog(w http.ResponseWriter, r *http.Request) {
-	if r.URL.Path != "/api/post/" {
-		app.clientError(w, http.StatusNotFound)
-		return
-	}
 
+}
+
+func (app *application) serveWs(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "GET":
-		u, _ := url.Parse(r.URL.Path)
-		fmt.Println(getFirstParam(u.Path))
-	case "POST":
-
+		ws, err := app.Upgrade(w, r)
+		if err != nil {
+			app.serverError(w, err)
+			return
+		}
+		go Writer(ws)
+		Reader(ws)
 	default:
 		app.clientError(w, http.StatusMethodNotAllowed)
 		return
 	}
+
 }
 
 func (app *application) createComment(w http.ResponseWriter, r *http.Request) {

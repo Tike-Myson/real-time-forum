@@ -38,3 +38,23 @@ func (m *CommentModel) InsertCommentIntoDB(commentData models.Comment) error {
 	}
 	return nil
 }
+
+func (m *RatingModel) GetCommentsByPostId(postId int) ([]models.Comment, error) {
+	var comment models.Comment
+	var comments []models.Comment
+	rows, err := m.DB.Query("SELECT * FROM comments WHERE post_id = ?", postId)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		err = rows.Scan(&comment.Id, &comment.PostId, &comment.UserId, &comment.Content, &comment.CreatedAt, &comment.Rating)
+		if err != nil {
+			return nil, err
+		}
+		comment.Rating = m.GetRatingById(comment.Id, "comment")
+		comments = append(comments, comment)
+	}
+	return comments, err
+}

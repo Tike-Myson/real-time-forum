@@ -22,7 +22,10 @@ func (app *application) routes() http.Handler {
 	mux.HandleFunc("/api/comment/like", app.likeComment)
 	mux.HandleFunc("/api/comment/dislike", app.dislikeComment)
 
-	mux.HandleFunc("/api/ws/{id}", app.showPost)
+	mux.HandleFunc("/api/dialog/create", app.showPost)
+	mux.HandleFunc("/api/message/create", app.showPost)
+	mux.HandleFunc("/api/dialog/", app.showDialog)
+	mux.HandleFunc("/api/ws/", app.serveWs)
 
 	mux.Handle("/static", http.FileServer(http.Dir("./static")))
 	return app.logRequest(app.secureHeaders(app.recoverPanic(mux)))

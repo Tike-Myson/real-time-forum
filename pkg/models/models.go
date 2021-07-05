@@ -57,6 +57,7 @@ type Dialog struct {
 	SenderId   string    `json:"sender_id,omitempty"`
 	ReceiverId string    `json:"receiver_id,omitempty"`
 	CreatedAt  time.Time `json:"created_at"`
+	Messages   []Message `json:"messages"`
 }
 
 type Category struct {
