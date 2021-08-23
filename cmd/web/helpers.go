@@ -6,6 +6,18 @@ import (
 	"runtime/debug"
 )
 
+func (app *application) getUserId(r *http.Request) (int, error) {
+	cookie, err := r.Cookie("session")
+	if err != nil {
+		return 0, err
+	}
+	userId, err := app.GetUserIdByCookie(cookie)
+	if err != nil {
+		return 0, err
+	}
+	return userId, nil
+}
+
 func (app *application) serverError(w http.ResponseWriter, err error) {
 	trace := fmt.Sprintf("%s\n%s", err.Error(), debug.Stack())
 	app.errorLog.Println(trace)

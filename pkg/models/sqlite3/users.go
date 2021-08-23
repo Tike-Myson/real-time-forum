@@ -11,6 +11,21 @@ type UserModel struct {
 	DB *sql.DB
 }
 
+func (m *UserModel) GetUserIdByLogin(username string) (int, error) {
+	var id int
+	stmt := "SELECT id, password FROM users WHERE username = ?"
+	row := m.DB.QueryRow(stmt, username)
+	err := row.Scan(&id)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return 0, models.ErrNoRecord
+		} else {
+			return 0, err
+		}
+	}
+	return id, nil
+}
+
 func (m *UserModel) CreateUsersTable() error {
 	usersTable, err := m.DB.Prepare(CreateUsersTableSQL)
 	if err != nil {

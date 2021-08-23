@@ -14,7 +14,8 @@ func (app *application) routes() http.Handler {
 	mux.HandleFunc("/api/user/logout", app.logout)
 
 	mux.HandleFunc("/api/post/create", app.createPost)
-	mux.HandleFunc("/api/post/", app.showPost)
+	mux.HandleFunc("/api/post", app.getAllPosts)
+	mux.HandleFunc("/api/post/{id}", app.showPost)
 	mux.HandleFunc("/api/post/like", app.likePost)
 	mux.HandleFunc("/api/post/dislike", app.dislikePost)
 

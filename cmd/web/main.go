@@ -37,12 +37,13 @@ type application struct {
 	}
 	ratings interface{
 		CreateRatingsTable() error
-		InsertPostRating(string, string, int) error
-		InsertCommentRating(string, string, int) error
+		InsertPostRating(int, int, int) error
+		InsertCommentRating(int, int, int) error
 		GetRatingById(int, string) (int, error)
 		GetCommentsByPostId(postId int) ([]models.Comment, error)
 	}
 	users interface{
+		GetUserIdByLogin(string) (int, error)
 		CreateUsersTable() error
 		CreateUser(models.User) error
 		Authenticate(string, []byte) (int, error)

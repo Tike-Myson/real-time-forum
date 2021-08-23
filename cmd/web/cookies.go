@@ -8,6 +8,18 @@ import (
 
 var Cookies = make(map[string]string)
 
+func (app *application) GetUserIdByCookie(cookie *http.Cookie) (int, error) {
+	ok, login := IsTokenExists(cookie.Value)
+	if ok {
+		id, err := app.users.GetUserIdByLogin(login)
+		if err != nil {
+			return 0, err
+		}
+		return id, nil
+	}
+	return 0, nil
+}
+
 func MakeCookie(login string) http.Cookie {
 	u1 := uuid.NewV4()
 

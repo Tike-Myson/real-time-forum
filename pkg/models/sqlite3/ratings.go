@@ -29,7 +29,7 @@ func (m *RatingModel) CreateRatingsTable() error {
 	return nil
 }
 
-func (m *RatingModel) InsertPostRating(userId, postId string, value int) error {
+func (m *RatingModel) InsertPostRating(userId, postId, value int) error {
 	var currentRatingValue int
 	found, currentRatingValue, err := m.IsRatingExists(userId, postId, "post")
 	if err != nil {
@@ -56,7 +56,7 @@ func (m *RatingModel) InsertPostRating(userId, postId string, value int) error {
 	return nil
 }
 
-func (m *RatingModel) InsertCommentRating(userId, commentId string, value int) error {
+func (m *RatingModel) InsertCommentRating(userId, commentId, value int) error {
 	var currentRatingValue int
 	found, currentRatingValue, err := m.IsRatingExists(userId, commentId, "comment")
 	if err != nil {
@@ -83,7 +83,7 @@ func (m *RatingModel) InsertCommentRating(userId, commentId string, value int) e
 	return nil
 }
 
-func (m *RatingModel) UpdateCommentRating(userId, commentId string, value int) error {
+func (m *RatingModel) UpdateCommentRating(userId, commentId, value int) error {
 	_, err := m.DB.Exec(UpdateRatingCommentSQL, value, userId, commentId)
 	if err != nil {
 		return err
@@ -91,7 +91,7 @@ func (m *RatingModel) UpdateCommentRating(userId, commentId string, value int) e
 	return nil
 }
 
-func (m *RatingModel) UpdatePostRating(userId, postId  string, value int) error {
+func (m *RatingModel) UpdatePostRating(userId, postId, value int) error {
 	_, err := m.DB.Exec(UpdateRatingPostSQL, value, userId, postId)
 	if err != nil {
 		return err
@@ -99,7 +99,7 @@ func (m *RatingModel) UpdatePostRating(userId, postId  string, value int) error 
 	return nil
 }
 
-func (m *RatingModel) IsRatingExists(userId, id, flag string) (bool, int, error) {
+func (m *RatingModel) IsRatingExists(userId, id int, flag string) (bool, int, error) {
 	var value int
 	switch flag {
 	case "post":

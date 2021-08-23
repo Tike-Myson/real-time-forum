@@ -177,10 +177,16 @@ func (app *application) createPost(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		userId, err := app.getUserId(r)
+		if err != nil {
+			app.serverError(w, err)
+			return
+		}
+
 		post := models.Post{
 			Title: data["title"],
 			Content: data["content"],
-			UserId: data["user_id"],
+			UserId: userId,
 			CreatedAt: time.Now(),
 			ImageURL: data["image_url"],
 		}
@@ -211,10 +217,16 @@ func (app *application) createDialog(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		userId, err := app.getUserId(r)
+		if err != nil {
+			app.serverError(w, err)
+			return
+		}
+
 		post := models.Post{
 			Title: data["title"],
 			Content: data["content"],
-			UserId: data["user_id"],
+			UserId: userId,
 			CreatedAt: time.Now(),
 			ImageURL: data["image_url"],
 		}
@@ -246,11 +258,16 @@ func (app *application) createMessage(w http.ResponseWriter, r *http.Request) {
 			app.serverError(w, err)
 			return
 		}
+		userId, err := app.getUserId(r)
+		if err != nil {
+			app.serverError(w, err)
+			return
+		}
 
 		post := models.Post{
 			Title: data["title"],
 			Content: data["content"],
-			UserId: data["user_id"],
+			UserId: userId,
 			CreatedAt: time.Now(),
 			ImageURL: data["image_url"],
 		}
@@ -260,6 +277,40 @@ func (app *application) createMessage(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		json.NewEncoder(w).Encode(post)
+	default:
+		app.clientError(w, http.StatusMethodNotAllowed)
+		return
+	}
+}
+
+func (app *application) getAllPosts(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case "GET":
+		posts, err := app.posts.Get()
+		if err != nil {
+			app.serverError(w, err)
+			return
+		}
+
+		for _, post := range posts {
+			post.Comments, err = app.ratings.GetCommentsByPostId(post.Id)
+			if err != nil {
+				app.serverError(w, err)
+				return
+			}
+			post.Rating, err = app.ratings.GetRatingById(post.Id, "post")
+			if err != nil {
+				app.serverError(w, err)
+				return
+			}
+		}
+
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Headers", "Origin")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Accept", "application/json")
+		json.NewEncoder(w).Encode(posts)
 	default:
 		app.clientError(w, http.StatusMethodNotAllowed)
 		return
@@ -339,9 +390,14 @@ func (app *application) createComment(w http.ResponseWriter, r *http.Request) {
 			app.serverError(w, err)
 			return
 		}
+		userId, err := app.getUserId(r)
+		if err != nil {
+			app.serverError(w, err)
+			return
+		}
 		comment := models.Comment{
 			PostId: data["post_id"],
-			UserId: data["user_id"],
+			UserId: userId,
 			Content: data["content"],
 			CreatedAt: time.Now(),
 		}
@@ -374,7 +430,17 @@ func (app *application) likePost(w http.ResponseWriter, r *http.Request) {
 			app.serverError(w, err)
 			return
 		}
-		err = app.ratings.InsertPostRating(data["user_id"], data["post_id"], 1)
+		userId, err := app.getUserId(r)
+		if err != nil {
+			app.serverError(w, err)
+			return
+		}
+		postId, err := strconv.Atoi(data["post_id"])
+		if err != nil {
+			app.serverError(w, err)
+			return
+		}
+		err = app.ratings.InsertPostRating(userId, postId, 1)
 		if err != nil {
 			app.serverError(w, err)
 			return
@@ -402,7 +468,17 @@ func (app *application) dislikePost(w http.ResponseWriter, r *http.Request) {
 			app.serverError(w, err)
 			return
 		}
-		err = app.ratings.InsertPostRating(data["user_id"], data["post_id"], -1)
+		userId, err := app.getUserId(r)
+		if err != nil {
+			app.serverError(w, err)
+			return
+		}
+		postId, err := strconv.Atoi(data["post_id"])
+		if err != nil {
+			app.serverError(w, err)
+			return
+		}
+		err = app.ratings.InsertPostRating(userId, postId, -1)
 		if err != nil {
 			app.serverError(w, err)
 			return
@@ -430,7 +506,17 @@ func (app *application) likeComment(w http.ResponseWriter, r *http.Request) {
 			app.serverError(w, err)
 			return
 		}
-		err = app.ratings.InsertCommentRating(data["user_id"], data["comment_id"], 1)
+		userId, err := app.getUserId(r)
+		if err != nil {
+			app.serverError(w, err)
+			return
+		}
+		postId, err := strconv.Atoi(data["post_id"])
+		if err != nil {
+			app.serverError(w, err)
+			return
+		}
+		err = app.ratings.InsertCommentRating(userId, postId, 1)
 		if err != nil {
 			app.serverError(w, err)
 			return
@@ -458,7 +544,17 @@ func (app *application) dislikeComment(w http.ResponseWriter, r *http.Request) {
 			app.serverError(w, err)
 			return
 		}
-		err = app.ratings.InsertCommentRating(data["user_id"], data["comment_id"], -1)
+		userId, err := app.getUserId(r)
+		if err != nil {
+			app.serverError(w, err)
+			return
+		}
+		postId, err := strconv.Atoi(data["post_id"])
+		if err != nil {
+			app.serverError(w, err)
+			return
+		}
+		err = app.ratings.InsertCommentRating(userId, postId, -1)
 		if err != nil {
 			app.serverError(w, err)
 			return
