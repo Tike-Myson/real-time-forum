@@ -53,7 +53,10 @@ func (m *RatingModel) GetCommentsByPostId(postId int) ([]models.Comment, error) 
 		if err != nil {
 			return nil, err
 		}
-		comment.Rating = m.GetRatingById(comment.Id, "comment")
+		comment.Rating, err = m.GetRatingById(comment.Id, "comment")
+		if err != nil {
+			return nil, err
+		}
 		comments = append(comments, comment)
 	}
 	return comments, err
